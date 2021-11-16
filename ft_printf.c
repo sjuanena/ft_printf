@@ -10,31 +10,30 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-include "printf.h"
+include "ft_printf.h"
 
-void	ft_format_wr(va_list tab, char format)
+int	ft_format_wr(va_list tab, char format)
 {
-	if format == '%'
-		ft_putchar_fd('%', 1);
-	elseif format == 'c'
-		va_arg(tab, int);
-		ft_putchar_fd(tab, 1);
-	elseif format == 's'
+	int	ret;
 
-	elseif format == 'p'
-
-	elseif format == 'd'
-
-	elseif format == 'i'
-
-	elseif format == 'u'
-
-	elseif format == 'x'
-
-	elseif format == 'X'
-
-	else
-/* ERROR*/
+	ret = 0;
+	if (format == '%')
+		ret = ft_wr_char('%');
+	if (format == 'c')
+		ret = ft_wr_char(va_arg(tab, int));
+	if (format == 's')
+		ret = ft_wr_str(va_arg(tab, char *));
+	if (format == 'p')
+		ret = ft_wr_str("0x") + ft_wr_hexa(va_arg(tab, unsigned long int), 'x');
+	if (format == 'd' || format == 'i')
+		ret = ft_wr_num(va_arg(tab, int));
+	if format == 'u'
+		ret = ft_wr_unum(va_arg(tab, unsigned int));
+	if format == 'x'
+		ret = ft_wr_hexa(va_arg(tab, unsigned int), 'x');
+	if format == 'X'
+		ret = ft_wr_hexa(va_arg(tab, unsigned int), 'X');
+	return (ret);
 }
 
 int	ft_printf(const char *format, ...)
@@ -49,10 +48,16 @@ int	ft_printf(const char *format, ...)
 	while (format[++i])
 	{
 		if format[i] == '%'
-			ft_format_wr(tab, format[i]);
+		{
+			ret += ft_format_wr(tab, format[i + 1]);
+			i++;
+		}
 		else
+		{
 			write(1, &format[i], 1);
+			ret++;
+		}
 	}
 	va_end(tab);
-	return(ret);
-i}
+	return (ret);
+}
